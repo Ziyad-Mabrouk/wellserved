@@ -1,13 +1,15 @@
 import React from 'react'
 import axios from 'axios';
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import '../Styles/Zone.css'
+import NotificationContext from '../NotificationContext'
 import live from '../Images/live.svg'
 import zone1 from '../Images/zone1.jpg'
 
 const Zone = ({ zone }) => {
   const [divName, setDivName] = useState("zone served");
   const [imageData, setImageData] = useState('');
+  const [predictions, setPredictions] = useState([]);
   
   const markAsServed = () => {
     if (divName === "zone served") {
@@ -17,15 +19,39 @@ const Zone = ({ zone }) => {
     }
   }
 
-  const fetchImage = async () => {
-    axios.get('http://localhost:3001/api/get_image')
-      .then(response => {
-        // Mettre à jour l'état avec les données de l'image
-        setImageData(response.data.imageData);
-      })
-      .catch(error => {});
-    };
+  const {notifications, setNotifications} = useContext(NotificationContext)
 
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/get_image');
+      const responseData = response.data;
+  
+      // Update the state with the image data
+      setImageData(responseData.imageData);
+  
+      // Check predictions and set divName accordingly
+      const receivedPredictions = responseData.predictions || [];
+      setPredictions(receivedPredictions);
+  
+      // Check if any prediction is "fullchair"
+      const isFullChair = receivedPredictions.some(prediction => prediction.class === "fullchair");
+      
+      // Update divName based on the prediction
+      if (isFullChair) {
+        setDivName("zone unserved");
+        setNotifications([...notifications, {message: "Zone " + zone.number + " is full", time: new Date()}]);
+      } else {
+        setDivName("zone served");
+        setNotifications([...notifications, {message: "Zone " + zone.number + " is empty", time: new Date()}]);
+      }
+  
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+
+    /*
     const predict = async () => {
         try {
           const response = await axios({
@@ -44,11 +70,12 @@ const Zone = ({ zone }) => {
           console.log(error.message);
         }
       };
+      */
 
     useEffect(() => {
         const interval = setInterval(() => {
-            fetchImage();
-            predict();
+            fetchData();
+            //predict();
         }, 1000); // Fetch image every 1 milisecond
         
         return () => clearInterval(interval);

@@ -1,8 +1,9 @@
 import React from 'react'
 import '../Styles/Home.css'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import Zone from '../Components/Zone'
 import Notification from '../Components/Notification'
+import NotificationContext from '../NotificationContext'
 import zone1 from '../Images/zone1.jpg'
 import zone2 from '../Images/zone2.jpg'
 
@@ -17,13 +18,9 @@ const Home = () => {
         image: zone2,
         }])
 
-    const [notifications, setNotifications] = useState([
-        {
-        message: "Zone 1 has been served",
-        },
-        {
-        message: "Zone 2 has been served",
-        }])
+    const {notifications} = useContext(NotificationContext)
+
+  
 
   return (
     <div className='home'>
@@ -40,9 +37,9 @@ const Home = () => {
       <h2 className='subtitle'>Notifications</h2>
       <div className='notifications'>
         {
-            notifications.map((notification) => (
-            <Notification notification={notification} />
-            ))
+          notifications.map((notification, index) => (
+            <Notification key={index} notification={notification} />
+          ))
         }
       </div>
     </div>

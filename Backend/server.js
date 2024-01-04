@@ -14,7 +14,7 @@ app.use(cors({
 
 
 app.get("/api/get_image", async (req, res) => {
-    const response = await axios.get('http://192.168.38.248:5000/api/get_image')
+    const response = await axios.get('http://localhost:5000/api/get_image')
     res.send(response.data);
 });
 
