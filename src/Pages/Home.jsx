@@ -31,7 +31,7 @@ const Home = () => {
       <div className='zones'>
         {
             zones.map((zone) => (
-            <Zone zone={zone} />
+              <Zone key={zone.number} zone={zone} zones={zones} setZones={setZones} />
             ))
         }
       </div>

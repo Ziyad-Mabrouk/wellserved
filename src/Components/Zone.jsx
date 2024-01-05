@@ -4,12 +4,12 @@ import { useState, useEffect, useContext } from 'react'
 import '../Styles/Zone.css'
 import NotificationContext from '../NotificationContext'
 import live from '../Images/live.svg'
-import zone1 from '../Images/zone1.jpg'
 
-const Zone = ({ zone }) => {
+const Zone = ({ zone, zones, setZones }) => {
   const [divName, setDivName] = useState("zone served");
   const [imageData, setImageData] = useState('');
   const [predictions, setPredictions] = useState([]);
+  const [prevStatus, setPrevStatus] = useState(false); // Track previous status
   
   const markAsServed = () => {
     if (divName === "zone served") {
@@ -34,7 +34,7 @@ const Zone = ({ zone }) => {
       setPredictions(receivedPredictions);
   
       // Check if any prediction is "fullchair"
-      const isFullChair = receivedPredictions.some(prediction => prediction.class === "fullchair");
+      const isFullChair = predictions.some(prediction => prediction.class === "fullchair");
       
       // Update divName based on the prediction
       const now = new Date();
@@ -46,14 +46,28 @@ const Zone = ({ zone }) => {
 
       const time = `${daysOfWeek[now.getDay()]}. ${dayOfMonth.toString().padStart(2, '0')}/${monthOfYear.toString().padStart(2, '0')}/${now.getFullYear()} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 
-      if (isFullChair) {
-        setDivName("zone unserved");
-        setNotifications([...notifications, {message: time  + ": Zone " + zone.number + " is full"}]);
-      } else {
-        setDivName("zone served");
-        setNotifications([...notifications, {message: time  + ": Zone " + zone.number + " is empty"}]);
+      // Add notification only if there's a change in status
+      if (isFullChair !== prevStatus) {
+        setPrevStatus(isFullChair);
+        const notificationMessage = isFullChair
+          ? `${time}: Zone ${zone.number} is full`
+          : `${time}: Zone ${zone.number} is empty`;
+
+        const updatedZones = zones.map((z) => {
+          if (z.number === zone.number) {
+            return {
+              ...z,
+              notifications: [...z.notifications, { message: notificationMessage }],
+            };
+          }
+          return z;
+        });
+
+        setZones(updatedZones);
       }
-  
+
+      // Update divName based on the prediction
+      setDivName(isFullChair ? 'zone unserved' : 'zone served');
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -85,7 +99,7 @@ const Zone = ({ zone }) => {
         const interval = setInterval(() => {
             fetchData();
             //predict();
-        }, 1000); // Fetch image every 1 milisecond
+        }, 1); // Fetch image every 1 milisecond
         
         return () => clearInterval(interval);
         }, []);

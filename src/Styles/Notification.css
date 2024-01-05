@@ -16,10 +16,10 @@
     align-items: center;
     flex-direction: column;
     border-radius: 10px;
-    margin: 10px;
+    margin: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: rgba(0, 0, 0, 0.4) 0px 4px 12px;
+    box-shadow: rgba(0, 0, 0, 0.128) 0px 4px 12px;
 }
 
 .notification:hover {
