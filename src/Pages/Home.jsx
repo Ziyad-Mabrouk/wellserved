@@ -12,10 +12,12 @@ const Home = () => {
         {
         number: 1,
         image: zone1,
+        url: 'http://localhost:5000/api/get_image',
         },
         {
         number: 2,
         image: zone2,
+        url: 'http://localhost:5000/api/get_image',
         }])
 
     const {notifications} = useContext(NotificationContext)

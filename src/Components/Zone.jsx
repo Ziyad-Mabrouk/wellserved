@@ -23,7 +23,7 @@ const Zone = ({ zone }) => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/get_image');
+      const response = await axios.get(zone.url);
       const responseData = response.data;
   
       // Update the state with the image data
@@ -37,12 +37,21 @@ const Zone = ({ zone }) => {
       const isFullChair = receivedPredictions.some(prediction => prediction.class === "fullchair");
       
       // Update divName based on the prediction
+      const now = new Date();
+      const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const monthOfYear = now.getMonth() + 1; // Month is zero-based, so adding 1
+      const dayOfMonth = now.getDate();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+
+      const time = `${daysOfWeek[now.getDay()]}. ${dayOfMonth.toString().padStart(2, '0')}/${monthOfYear.toString().padStart(2, '0')}/${now.getFullYear()} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+
       if (isFullChair) {
         setDivName("zone unserved");
-        setNotifications([...notifications, {message: "Zone " + zone.number + " is full", time: new Date()}]);
+        setNotifications([...notifications, {message: time  + ": Zone " + zone.number + " is full"}]);
       } else {
         setDivName("zone served");
-        setNotifications([...notifications, {message: "Zone " + zone.number + " is empty", time: new Date()}]);
+        setNotifications([...notifications, {message: time  + ": Zone " + zone.number + " is empty"}]);
       }
   
     } catch (error) {
@@ -82,14 +91,19 @@ const Zone = ({ zone }) => {
         }, []);
 
   // Fonction pour décoder l'image encodée en base64
-  const decodeImage = (base64String) => {
+const decodeImage = (base64String) => {
+  try {
     const decodedImage = atob(base64String);
     const uint8Array = new Uint8Array(decodedImage.length);
     for (let i = 0; i < decodedImage.length; i++) {
       uint8Array[i] = decodedImage.charCodeAt(i);
     }
     return URL.createObjectURL(new Blob([uint8Array], { type: 'image/png' }));
-  };
+  } catch (error) {
+    console.error('Error decoding image:', error);
+    return ''; // Return an empty string or handle the error appropriately
+  }
+};
 
 
 

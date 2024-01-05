@@ -7,10 +7,10 @@ import NotificationContext from './NotificationContext';
 const App = () => {
   const [notifications, setNotifications] = React.useState([
     {
-    message: "Zone 1 has been served",
+    message: "Zone 1 is live",
     },
     {
-    message: "Zone 2 has been served",
+    message: "Zone 2 is live",
     }]);
 
   return (
