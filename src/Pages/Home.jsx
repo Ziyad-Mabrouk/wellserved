@@ -12,12 +12,12 @@ const Home = () => {
         {
         number: 1,
         image: zone1,
-        url: 'http://localhost:5000/api/get_image',
+        url: 'http://192.168.57.64:5000/api/get_image', //adresse ip du premier pc (camera 1)
         },
         {
         number: 2,
         image: zone2,
-        url: 'http://localhost:5000/api/get_image',
+        url: 'http://192.168.57.10:5000/api/get_image', //adresse ip du deuxieme pc (camera 2)
         }])
 
     const {notifications} = useContext(NotificationContext)
